@@ -1,0 +1,13 @@
+Package: stepfinder
+Title: Step Detection in One Dimensional Data.
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Matias",
+           family = "Andina",
+           role = c("aut", "cre"),
+           email = "matiasandina@gmail.com")
+Description: This package provides a group of functions for semi-automated and manual inspection of steps in one dimensional data. It was created to deal with data emerging from detections of xy positions in a video recording at 30 Hz. 
+License: CCBY-4.0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
