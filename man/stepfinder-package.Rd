@@ -8,6 +8,14 @@
 \description{
 This package provides a group of functions for semi-automated and manual inspection of steps in one dimensional data. It was created to deal with data emerging from detections of xy positions in a video recording at 30 Hz.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/matiasandina/stepfinder}
+  \item Report bugs at \url{https://github.com/matiasandina/stepfinder/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Matias Andina \email{matiasandina@gmail.com}
 
