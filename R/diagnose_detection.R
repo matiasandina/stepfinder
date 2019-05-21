@@ -1,5 +1,6 @@
 #' @title Diagnose Detection
 #'
+#' @name diagnose_detection
 #' @description This function is meant to provide a fast plot of the `xy` position trace, `x` and `y` velocities for diagnosis. It can inform the threshold needed for finding wrong detections. User input is required to decide whether the detections are correct (nothing needs to be done) or incorrect (tagged for step detection).
 #' @param df data.frame containing `x` and `y` coordinates of subject `id`.
 #' @keywords diagnostic

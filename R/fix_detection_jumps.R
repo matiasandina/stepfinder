@@ -1,9 +1,25 @@
-## Fix detection jumps
-# Find peaks function comes from this repo
-# https://github.com/stas-g/findPeaks
-# I added a copy to this repo to source it without internet connection
+#' @title Fix Detection Jumps
+#'
+#' @name fix_detection_jumps
+#' @description This function calculates derivatives, finds jumps above threshold and calls functions to recognize/fix the step. It can manage 3 ways to detect a step: derivatives + convolution, bare derivatives, and manual.
+#' @param df data.frame containing `x` and `y` coordinates of subject `id`.
+#' @param v_thresh numeric, threshold velocity above which a detection is considered wrong and marked for step detection.
+#' @param tol numeric, to be used to pass to `cluster_candidate_list()`.
+#' @param use_convolution logical, whether to use convolution to find step. If TRUE will call `find_step()`, else it will use bare derivatives and thresholding for the candidates.
+#' @param manual_removal logical, whether to go to manual inspection and removal of the steps. See `manual_step_removal()`.
+#' @keywords diagnostic
+#' @export
+#' @return data.frame with the same input columns, positions may or may not be fixed depending on user input.
+#' @examples
+#' library(stepfinder)
+#' set.seed(123)
+#' df <- data.frame(id = "first_target", frameID=1:1000, x=rnorm(1000, 0, 5), y = rnorm(1000, 0, 5))
+#' df$x[50:80] <- 200
+#' df$y[c(100:150, 400:420)] <- 200
+#' diagnose_detection(df)
+#' fix_detection_jumps(df)
+#' explore parameter values
 
-library(rChoiceDialogs)
 library(stringr)
 
 

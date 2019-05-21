@@ -25,9 +25,17 @@ remove_gap_interpolate <- function(x=NULL, from, to){
   fixed_x <- x
   fixed_x[from:to] <- NA
   
-  # this might create an error if we don't have 20
-  fit_x <- zoo::na.spline(fixed_x)
-  fixed_x[from:to]<- fit_x[from:to]
+  if(to == length(x)){
+    # interpolate with the median
+    fixed_x[from:to]<- median(x[(from-10):from])
+    
+  } else {
+    # do spline
+    fit_x <- zoo::na.spline(fixed_x)
+    fixed_x[from:to]<- fit_x[from:to]
+
+  }
+  
   
   return(fixed_x)
   

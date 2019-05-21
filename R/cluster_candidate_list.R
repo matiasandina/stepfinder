@@ -1,4 +1,21 @@
-# Helper to figure out whether they are similar
+#' @title Cluster Candidate List
+#'
+#' @name cluster_candidate_list
+#' @description This function clusters candidates in pairs.
+#' @param positions vector of candidates in which the main signal might have jumped.
+#' @param diff_positions derivative of the signal in positions.
+#' @param tol integer, tolerance for two numbers being considered similar.
+#' @keywords clustering
+#' @export
+#' @return list of candidates grouped in pairs according to clustering and similar jump.
+#' @examples
+#' x <- c(rep(1, 10), rep(50, 10), rep(1, 10))
+#' diff_x <- c(0, diff(x))
+#' positions <- which(abs(diff_x) > 10)
+# cluster_candidate_list(positions, diff_x[positions], tol=10)
+
+
+# Helper to figure out whether jumps on the step are similar
 # all.equal.numeric() should do this, but it is not intuitive
 similar <- function(a, b, tol){
   # we assume a and b to be length 1 integers
@@ -9,7 +26,7 @@ similar <- function(a, b, tol){
   } else {
     return(FALSE)
   }
-  
+
 }
 
 ## Main function
@@ -17,48 +34,48 @@ similar <- function(a, b, tol){
 cluster_candidate_list <- function(positions,
                                    diff_positions,
                                    tol){
-  
+
   if(length(positions) == 0){
     message("Function was called with no positions, early exit before cluster.")
     return(list(data.frame(positions=positions)))
   }
-  
+
   if (length(positions) == 2){
     message("Only 2 positions given, early exit before cluster.")
     return(list(data.frame(positions=positions)))
   }
-  
+
   ### Cluster
-  
+
   # Determine number of centroids
   # We want to group them in pairs
   is_even <- length(positions) %% 2
-  
+
   if(is_even == 0){
     k_centers <- length(positions) / 2
   } else {
     k_centers <- floor(length(positions)/2) + 1
   }
-  
+
   # Get the clustering
   # We iterate a bit more, sometimes it might still be off by random centers
   x_clust <- kmeans(positions,
                     centers = k_centers,
                     nstart = 4, # do it with 2 sets of random starts
                     iter.max = 50)$cluster
-  
+
   print("These clusters were found...")
   print(x_clust)
 
   candidates <- data.frame(positions,
                    x_clust = x_clust,
                    diff_val = diff_positions[positions])
-  
+
   print(candidates)
 
   # TODO: Will we use all these variables?
   # We do math here....how useful is the sign ?
-  candidates <- 
+  candidates <-
   candidates %>% group_by(x_clust) %>%
   mutate(
     clust_length = length(x_clust),
@@ -74,9 +91,9 @@ cluster_candidate_list <- function(positions,
   if(nrow(not_similar) > 0){
     message("Some steps were not fixed, try calling the function again.\nMaybe increasing the tolerance? See below:")
     print(not_similar)
-    
+
   }
-  
+
   # Split candidates
   x_candidate_list <- candidates %>%
     mutate(x_clust = factor(x_clust)) %>%
