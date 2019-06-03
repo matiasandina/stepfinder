@@ -5,7 +5,7 @@
 #' @param tolerance integer, threshold distance for step detection after convolution
 #' @param kernel_size integer, kernel size of the convolution window (by default 3).
 #' @keywords convolution
-#' @export
+#' @export find_step
 #' @return vector of positions of `x` where the step is predicted.
 #' @examples
 #' x <- c(rep(1,20), rep(50, 20), rep(1, 20))

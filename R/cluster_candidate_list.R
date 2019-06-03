@@ -6,7 +6,7 @@
 #' @param diff_positions derivative of the signal in positions.
 #' @param tol integer, tolerance for two numbers being considered similar.
 #' @keywords clustering
-#' @export
+#' @export cluster_candidate_list
 #' @return list of candidates grouped in pairs according to clustering and similar jump.
 #' @examples
 #' x <- c(rep(1, 10), rep(50, 10), rep(1, 10))

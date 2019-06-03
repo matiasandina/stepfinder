@@ -8,7 +8,7 @@
 #' @param use_convolution logical, whether to use convolution to find step. If TRUE will call `find_step()`, else it will use bare derivatives and thresholding for the candidates.
 #' @param manual_removal logical, whether to go to manual inspection and removal of the steps. See `manual_step_removal()`.
 #' @keywords diagnostic
-#' @export
+#' @export fix_detection_jumps
 #' @return data.frame with the same input columns, positions may or may not be fixed depending on user input.
 #' @examples
 #' library(stepfinder)
@@ -19,9 +19,6 @@
 #' diagnose_detection(df)
 #' fix_detection_jumps(df)
 #' explore parameter values
-
-library(stringr)
-
 
 fix_detection_jumps <- function(df,
                                 v_thresh = 25,

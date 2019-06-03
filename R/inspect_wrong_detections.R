@@ -1,4 +1,16 @@
-## This function attempts to be called from fix_detection_jumps
+#' @title Inspect Wrong Detections
+#'
+#' @name inspect_wrong_detections
+#' @description This function is called from `fix_detection_jumps`. It handles correct subsetting, prompts user and calls of `remove_gap_interpolate`. This function does a lot of printing an plotting. Printing will be improved/reduced. Plotting might be moved to ggplot2 instead of base.
+#' @param x numeric vector, passed through `fix_detection_jumps`
+#' @param diff_x result of c(0, diff(x)), passed through `fix_detection_jumps`.
+#' @param maybe_bad numeric vector, possible points to inspect, passed through `fix_detection_jumps`.
+#' @param use_convolution logical, whether to use convolution to find step. If TRUE will call `find_step()`, else it will use bare derivatives and thresholding for the candidates.
+#' @keywords diagnostic
+#' @export inspect_wrong_detections
+#' @return data.frame with the same input columns, positions may or may not be fixed depending on user input.
+#' @examples
+
 
 inspect_wrong_detections <- function(x, diff_x, maybe_bad,
                                      use_convolution=TRUE){
