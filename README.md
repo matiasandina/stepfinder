@@ -33,7 +33,7 @@ devtools::install_github("matiasandina/stepfinder")
 > will be prompted several times and should be familiar with the
 > pipeline.
 
-> Although these funcitons should work for any type of 1 dimensional
+> Although these functions should work for any type of 1 dimensional
 > data, there are a good number of references to animals. This is
 > because the package was developed for detection of steps during
 > tracking of animal positions.
@@ -59,9 +59,10 @@ Minimally, you would have a `data.frame` with 3 columns `frameID`, `x`,
 examples under `data`.
 
 ``` r
-# load data
-df <- read.csv("data/df.csv")
-head(df)
+# load data from github
+# df <- read.csv("https://raw.githubusercontent.com/matiasandina/stepfinder/master/data/sample_detection.csv")
+# or from package .Rdata
+head(sample_detection)
 #>   frameID  x   y
 #> 1       1 93 111
 #> 2       2 95 111
@@ -72,7 +73,7 @@ head(df)
 ```
 
 ``` r
-diagnostic <- diagnose_detection(df)
+diagnostic <- diagnose_detection(sample_detection)
 ```
 
 > If your data does not have an `id` column, random IDs will be assigned
@@ -94,16 +95,17 @@ And to see the velocity plots.
 
 ![](sample_img/vel_1473.png)
 
-Finally, you have to answer whether the detction was good or bad.
+Finally, you have to answer whether the detection was good or bad.
 
     Detection was correct [Yy/Nn]: >
 
 Here’s an example of a wrong detection (Prompts not included).
 
 ``` r
-# read data
-df_wrong <- read.csv("data/df_wrong.csv")
-diagnostic <- diagnose_detection(df_wrong)
+# read data from GitHub
+df_wrong <- read.csv("https://raw.githubusercontent.com/matiasandina/stepfinder/master/data/sample_wrong_detection.csv")
+# or just from package .Rdata
+diagnostic <- diagnose_detection(sample_wrong_detection)
 ```
 
 ![](sample_img/path_8359.png)
@@ -131,7 +133,13 @@ lapply(list_of_df, function(t) diagnose_detection(t))
 
 ### Fixing detections
 
-The workhorse for fixing detections is `fix_detection_jumps`. See
+The workhorse for fixing detections is `fix_detection_jumps`. This
+function will print a good amount of info about possible wrong
+detections (those `xy` with `abs(diff(xy)) > v_thresh`). Because we are
+looking for steps, every bad detection should have a companion. Thus,
+`fix_detection_jumps` will call `cluster_candidate_list` to attempt to
+cluster possible bad detections in pairs. Later on, it will prompt the
+user for proper removal and interpolation of steps. See
 `?fix_detection_jumps`. Basic example below.
 
 ### Convolution
@@ -141,10 +149,71 @@ convolution to find whether there’s a step around the candidates.
 Convolution is implemented through `find_step()`.
 
 ``` r
-fix_detection_jumps(df)
+fixed_data <- fix_detection_jumps(sample_wrong_detection)
 ```
 
+Info will be printed for `x` and `y`, only `x` is presented below.
+
+    We found 4 possible candidates...
+
+    [1] "This clusters were found..."
+    [1] 1 1 2
+
+``` 
+  positions x_clust diff_val
+1       320       1      249
+2       401       1     -279
+3     16483       2      -30
+```
+
+We are looking for detections that have high difference (in this case
+diff\_val ~ 250), opposite sign, and come in pairs. Positions 320 and
+401 look like an actual step, the other one looks like a genuine high
+velocity.
+
+    Inspecting positions in x
+    Press [enter] to see velocity plots: > 
+
+![](sample_img/fix_jump_sample.png)
+
+We can see that the spikes in velocity are artificial. We could skip
+removal (1) but would like to remove them (2).
+
+    Diagnose detection:
+    Good Detection --> Keep or Bad Detection --> Remove?? [(1/2)]: >
+
+    Using convolution to find step.
+    Derivate goes positive to negative,
+    Prediction is step-up
+    Analyzing position close to bad detections
+
+![](sample_img/step_removal.png)
+
+Finally, the user will still have the last say whether to replace data
+or not.
+
+    Are you happy with interpolation [Yy/Nn]? : >
+
+If you liked the interpolation (and entered ‘y’), you will see:
+
+    Modifying data...
+
 ### Just derivatives
+
+Sometimes, convolution can’t detect steps. In that case, we can just try
+to use the candidates from derivatives. This works most of the time and
+might be the default behavior in next versions of the
+package.
+
+``` r
+fixed_detections <- fix_detection_jumps(sample_wrong_detection, use_convolution = FALSE)
+```
+
+Procedure is almost identical to before, but you will see.
+
+    No convolution.
+    Finding steps from derivatives
+    Analyzing position close to bad detections
 
 ### Manual
 
@@ -153,3 +222,32 @@ Sometimes, you have to go full manual.
 ``` r
 fix_detection_jumps(df_wrong, manual_removal = TRUE)
 ```
+
+    We found 4 possible candidates...
+    Entering manual mode....
+    Analyze x
+    Diagnose detection:
+
+![](sample_img/manual_wrong_detection.png)
+
+    Good Detection --> Keep or Bad Detection --> Remove?? [(1/2)]: >
+
+When you try to remove (2), you will see:
+
+    Select range from possible candidates.
+    320   401 16483
+
+We know that 401 is the one we need to select (the length of the
+`data.frame` is included in the candidates for the very special case in
+which a step is detected until the end of the data).
+
+    Analyzing position close to bad detections
+
+![](sample_img/manual_fix.png)
+
+    Are you happy with interpolation [Yy/Nn]? : >
+
+## Contribute
+
+This is a preliminary release. Please file issues to make this software
+work better.

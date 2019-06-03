@@ -76,12 +76,18 @@ fix_detection_jumps <- function(df,
     message("Entering manual mode....")
     message("Analyze x")
     for(bad_x in maybe_bad_x){
-
-        # Call manual function here
-      }
-    message("Analyze y")
-
+      # Call manual function here
+      x <- manual_step_removal(x, point=bad_x,
+                               candidates=maybe_bad_x)
     }
+    message("Analyze y")
+    for(bad_y in maybe_bad_y){
+      # Call manual function here
+      y <- manual_step_removal(y, point = bad_y,
+                               candidates= maybe_bad_y)
+    }
+  }
+
 
 
   message("Replacing values into original data.frame")

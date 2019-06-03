@@ -1,24 +1,32 @@
-# This function is for manual removal
-library(ggplot2)
-library(ggforce)
+#' @title Manual Step Removal
+#'
+#' @name manual_step_removal
+#' @description This function handles manual step removal.
+#' @param x numeric vector, passed through `fix_detection_jumps`
+#' @param point position in x to be evaluated.
+#' @param window integer, number of positions to create a window before and after `point`, default=50.
+#' @keywords diagnostic
+#' @export manual_step_removal
+#' @return modified x depending on user input. Calls `remove_gap_interpolate`.
+#' @examples
 
 manual_step_removal <- function(x, point, candidates,
                                 window=50){
-  
+
   df <- data.frame(frameID = 1:length(x),
                    variable = x)
-  
-  low_zoom <- max(1, point - 50)
-  high_zoom <- min(point+50, length(x))
-  
+
+  low_zoom <- max(1, point - window)
+  high_zoom <- min(point + window, length(x))
+
   p1 <- ggplot(df, aes(frameID, variable)) +
     geom_line() +
     geom_point(data=data.frame(frameID=point,
                                variable=x[point]), size=2)+
-    facet_zoom(xlim=c(low_zoom,high_zoom)) +
+    ggforce::facet_zoom(xlim=c(low_zoom,high_zoom)) +
     theme_light()+
     theme(strip.background = element_rect(fill="red"))
-  
+
   print(p1)
 
   message("Diagnose detection:")
@@ -31,6 +39,7 @@ manual_step_removal <- function(x, point, candidates,
 
   if(ask == 2){
     message("Select range from possible candidates.")
+    print(candidates)
       to <- as.numeric(readline(prompt = "type the candidate at the end of the step. > "))
 
     while(!to %in% candidates){
@@ -47,32 +56,26 @@ manual_step_removal <- function(x, point, candidates,
     x_pos_region <- x[low:high]
 
     message("Analyzing position close to bad detections")
-    
+
     # interpolate
     if(length(x_to_remove) > 1){
       new_data_x <- remove_gap_interpolate(x,
                                            min(x_to_remove),
                                            max(x_to_remove))
-      
-      print(new_data_x)
-      
+
       df2 <- data.frame(frameID = low:high,
                         variable = new_data_x[low:high])
-      
+
       # add interpolated data to the graph
       p2 <- p1 + geom_line(data=df2,
                            aes(frameID, variable),
                            color="red")
-      
-      print(p2)
-      
-      Sys.sleep(0.5)  
-    
-  }
 
-#  } else {
-#    new_data_x <- x_pos_region
-#  }
+      print(p2)
+
+      Sys.sleep(0.5)
+
+  }
 
   happy <- readline(prompt = "Are you happy with interpolation [Yy/Nn]? : >")
 
@@ -92,6 +95,6 @@ manual_step_removal <- function(x, point, candidates,
   }
 
   }
-  
+
   return(x)
 }
