@@ -4,6 +4,7 @@
 #' @description This function is meant to provide a fast plot of the `xy` position trace, `x` and `y` velocities for diagnosis. It can inform the threshold needed for finding wrong detections. User input is required to decide whether the detections are correct (nothing needs to be done) or incorrect (tagged for step detection).
 #' @param df data.frame containing `x` and `y` coordinates of subject `id`.
 #' @keywords diagnostic
+#' @import ggplot2
 #' @export
 #' @return data.frame with id and user input regarding correct
 #' @examples
@@ -11,7 +12,6 @@
 #' df <- data.frame(id = "first_target", frameID=1:1000, x=rnorm(1000, 0, 5), y = rnorm(1000, 0, 5))
 #' diagnose_detection(df)
 
-library(ggplot2)
 
 diagnose_detection <- function(df){
 
@@ -19,7 +19,7 @@ diagnose_detection <- function(df){
     message(sprintf("Running diagnostics for %s",
                     unique(df$id)))
   } else {
-    message("No id found, assigning random id.\n This is not reproducible, if IDs matter assign IDs beforehand!")
+    message("No id found, assigning random id.\nInternal id assignment is not reproducible, if IDs matter assign IDs beforehand!")
     rand_id <- floor(runif(1, min = 1000, max = 10000))
     df$id <- rand_id
   }

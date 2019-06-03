@@ -13,3 +13,6 @@ LazyData: true
 RoxygenNote: 6.1.1
 URL: https://github.com/matiasandina/stepfinder
 BugReports: https://github.com/matiasandina/stepfinder/issues
+Depends: 
+    ggplot2,
+    dplyr
